@@ -10,34 +10,22 @@ jobs:
       matrix:
         python-version: ["3.6", "3.7", "3.8", "3.9", "3.10"]
         os: [ubuntu-latest, ubuntu-18.04, macos-latest, windows-latest]
+        include:
+          - os: ubuntu-latest
+            path: ~/.cache/pip
+          - os: ubuntu-18.04
+            path: ~/.cache/pip
+          - os: macos-latest
+            path: ~/Library/Caches/pip
+          - os: windows-latest
+            path: ~\AppData\Local\pip\Cache
 
     steps:
       - uses: actions/checkout@v2
-      - name: Ubuntu cache
+      - name: Cache pip
         uses: actions/cache@v2
-        if: startsWith(matrix.os, 'ubuntu')
         with:
-          path: ~/.cache/pip
-          key:
-            ${{ matrix.os }}-${{ matrix.python-version }}-${{ hashFiles('**/pyproject.toml') }}
-          restore-keys: |
-            ${{ matrix.os }}-${{ matrix.python-version }}-
-
-      - name: macOS cache
-        uses: actions/cache@v2
-        if: startsWith(matrix.os, 'macOS')
-        with:
-          path: ~/Library/Caches/pip
-          key:
-            ${{ matrix.os }}-${{ matrix.python-version }}-${{ hashFiles('**/pyproject.toml') }}
-          restore-keys: |
-            ${{ matrix.os }}-${{ matrix.python-version }}-
-
-      - name: Windows cache
-        uses: actions/cache@v2
-        if: startsWith(matrix.os, 'windows')
-        with:
-          path: c:\users\runneradmin\appdata\local\pip\cache
+          path: ${{ matrix.path }}
           key:
             ${{ matrix.os }}-${{ matrix.python-version }}-${{ hashFiles('**/pyproject.toml') }}
           restore-keys: |
